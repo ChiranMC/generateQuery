@@ -133,6 +133,7 @@ async def parse_sql_text(payload: dict):
 async def get_sql_file():
     """
     Retrieve and parse the 'enmaxschema.sql' file from the current folder.
+    Change the file Path if Updated
     """
     file_path = "enmaxschema.sql"
 
