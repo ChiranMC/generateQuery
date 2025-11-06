@@ -127,3 +127,29 @@ async def parse_sql_text(payload: dict):
     json_data = to_serializable(tables)
 
     return JSONResponse(content=json_data)
+
+
+@app.get("/get-sql")
+async def get_sql_file():
+    """
+    Retrieve and parse the 'enmaxschema.sql' file from the current folder.
+    """
+    file_path = "enmaxschema.sql"
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            sql_text = f.read()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"File '{file_path}' not found.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
+
+    # Parse SQL text using same helper functions
+    try:
+        tables = extract_tables_and_ddl(sql_text)
+        parse_constraints(sql_text, tables)
+        json_data = to_serializable(tables)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error parsing SQL: {str(e)}")
+
+    return JSONResponse(content=json_data)
